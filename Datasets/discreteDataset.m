@@ -2,22 +2,22 @@ function [ discreteData ] = discreteDataset(  )
 % Generate a random discrete Dataset of 10000 data and a change from instante tChange to the end of the stream;
 
 discreteData = zeros(1,10000);
-numberOfStates = 2;
+numberOfStates = 5;
 tChange = 7500;
 window = 100;
 
-for n=1:tChange
+for n=1:length(discreteData)
     discreteData(n) = floor(rand*numberOfStates) + 1;
 end
-for i=tChange:window:(length(discreteData)-window)
-    for n=i:window+i
-        if n <= i+70
-            discreteData(n) = 1;
-        else
-            discreteData(n) = 2;
-        end
-     end
-end
+% for i=tChange:window:(length(discreteData)-window)
+%     for n=i:window+i
+%         if n <= i+70
+%             discreteData(n) = 1;
+%         else
+%             discreteData(n) = 2;
+%         end
+%      end
+% end
 
 %change introduction at tChange
 % for i=tChange:300:9900
