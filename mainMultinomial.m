@@ -12,11 +12,11 @@ addpath('Datasets/')
 %Variables initialization
 window = 100;
 numberOfStates = 5;
-% test = 0;
+test = 0;
 h = 20.993;
 hotellingTot = zeros(10,window);
 maxTot = zeros(10,1);
-for run=1:1000
+for run=1:10
     %f = 1;
     [finalDataset] = discreteDataset();
     limit = floor(length(finalDataset)/window);
@@ -53,9 +53,9 @@ for run=1:1000
     hotellingTot(run,:) = hotellingT(:,:);
     maxTot(run,1) = maxT;
     %controllo superamento soglia fissa
-%     if maxT >= log(h)
-%         test = test +1;
-%     end
+    if maxT >= log(h)
+        test = test +1;
+    end
 end
 meanHotelling = mean(hotellingTot);
 meanMaxT = mean(maxTot);
