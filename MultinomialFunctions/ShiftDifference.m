@@ -1,4 +1,4 @@
-function [ hotellingT ] = ShiftDifference( tChange, estimateVector )
+function [ hotellingT ] = ShiftDifference( tChange, estimateVector)
 %SHIFTDIFFERENCE Summary of this function goes here
 %   Detailed explanation goes here
 
