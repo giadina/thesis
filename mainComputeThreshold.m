@@ -15,7 +15,7 @@ resPercentili = zeros(1,length(percentili));
 % for prova=1:3
 %     test = 0;
 for run=1:1000
-    [finalDataset] = discreteDataset();
+    [finalDataset] = discreteDataset(numberOfStates);
     limit = floor(length(finalDataset)/window);
     estimateVector = [];
     

@@ -1,7 +1,6 @@
-function [ discreteData ] = discreteDataset(  )
+function [ discreteData ] = discreteDataset( numberOfStates )
 % Generate a random discrete Dataset of 10000 data and a change from instante tChange to the end of the stream;
 
-numberOfStates = 2;
 DELTA = 0.1;
 N = 10000;
 tChange = 7500;

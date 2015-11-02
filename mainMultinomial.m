@@ -9,7 +9,7 @@ addpath('Datasets/')
 window = 100;
 numberOfStates = 2;
 h = 13.932;
-[finalDataset] = discreteDataset();
+[finalDataset] = discreteDataset(numberOfStates);
 limit = floor(length(finalDataset)/window);
 estimateVector = [];
 
@@ -25,12 +25,12 @@ for col=2:length(estimateVector)
         hotellingT(col,t) = ShiftDifference(t, estimateVector(:,1:col));
         [maxT(col,1), idx(col,1)] = max(hotellingT(col,:));
         
-        if maxT >= h  %esecuzione normale
+        if maxT >= h
             tChange = idx;
         end
     end
 end
 
-% figure(1)
-% plot(hotellingT)
-% line([0 100],[h h],'LineWidth',2,'Color', 'b')
+figure(1)
+plot(maxT)
+line([0 100],[h h],'LineWidth',2,'Color', 'b')
