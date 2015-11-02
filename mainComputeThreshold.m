@@ -10,12 +10,14 @@ window = 100;
 numberOfStates = 2;
 percentili = [99 99.5 99.8 99.9 99.95];
 resPercentili = zeros(1,length(percentili));
-
+% mediaT = zeros(1,3);
+% h = 13.932;
+% for prova=1:3
+%     test = 0;
 for run=1:1000
     [finalDataset] = discreteDataset();
     limit = floor(length(finalDataset)/window);
     estimateVector = [];
-    c = 1;
     
     %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
     for i=window+1:window:(limit*window)+window
@@ -24,10 +26,9 @@ for run=1:1000
         estimateVector = [estimateVector A/window];
     end
     
-    for t=1:length(estimateVector)
+    for t=floor(length(estimateVector)/2):length(estimateVector)
         hotellingT(1,t) = ShiftDifference(t, estimateVector);
-        maxT = max(hotellingT);
-        idx = find(hotellingT==(max(hotellingT)));
+        [maxT, idx] = max(hotellingT);
     end
     
 %     hotellingTot(run,:) = hotellingT(:,:);
@@ -40,3 +41,10 @@ for run=1:1000
     end
     
 end
+%controllo superamento soglia fissa
+%         if maxT >= h
+%             test = test +1;
+%         end
+%     end
+%     mediaT(1,prova) = test;
+% end
