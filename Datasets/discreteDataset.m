@@ -23,6 +23,6 @@ pd1 = makedist('Multinomial','probabilities',p1);
 % Generate the dataset
 % discreteData = [random(pd1,tChange,1); random(pd2,N-tChange,1)];
 
-discreteData = random(pd1,N,1);
+discreteData = random(pd1,N,1)';
     
 end

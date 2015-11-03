@@ -9,13 +9,18 @@ addpath('Datasets/')
 window = [300, 200, 100, 50];
 numberOfStates = [2, 3, 4, 5];
 ARL_0 = zeros(5,1);
+exp = 10;
 
 for ns=1:length(numberOfStates)
+    
     thr = load('/THRESHOLDS.mat', sprintf('THRESHOLD_%d', numberOfStates(ns)));
     THRESHOLD = getfield(thr, sprintf('THRESHOLD_%d', numberOfStates(ns)));
+    
     for w=1:length(window)
+        
         % Compute ARL over 10 iterations
-        for run=1:10
+        for run=1:exp
+            
             counter = 1;
             FLAG = ones(5,1);
             while (sum(FLAG) > 0)  % Thresholds still to overcome
