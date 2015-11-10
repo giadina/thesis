@@ -6,23 +6,22 @@ addpath('MultinomialFunctions/')
 addpath('Multinomial CDT/')
 addpath('Datasets/')
 
-CPM_mode = 'max_t'; %'out_cpm'
+CPM_mode = 'max_t';     %'out_cpm';
+Shift_mode = 'approx';  %'exact';
 numberOfStates = 2;
 [finalDataset] = discreteDataset(numberOfStates);
 
 switch lower(CPM_mode)
     case {'max_t'}
-        
         %Variables initialization CPM mean
         window = 100;
         h = 13.932;
         % Apply CPM mean
-        [ hotellingT, maxT, idx, tChange ] = applyCPMmean(h,numberOfStates,window,finalDataset );
+        [ hotellingT, maxT, idx, tChange ] = applyCPMmean(h,numberOfStates,window,finalDataset,Shift_mode);
         figure, plot(maxT)
         line([0 100],[h h],'LineWidth',2,'Color', 'b')
         
     case {'out_cpm'}
-        
         %Variables initialization CPM mean,s
         CPM_type = 'full'; % full, 'sel'
         CPM_init = round(length(finalDataset)/2) + 1;
