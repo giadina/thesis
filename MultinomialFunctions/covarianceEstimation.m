@@ -2,8 +2,8 @@ function [ covarianceVector ] = covarianceEstimation( tChange, estimateVector )
 %COVARIANCEESTIMATION Summary of this function goes here
 %   Detailed explanation goes here
 
-coeff = length(estimateVector)-2;
-tEnd = length(estimateVector);
+coeff = size(estimateVector,2)-2;
+tEnd = size(estimateVector,2);
 sumPreChange = 0;
 sumPostChange = 0;
 meanPreChange = meanEstimation(0,tChange,estimateVector);

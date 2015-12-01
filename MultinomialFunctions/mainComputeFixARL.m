@@ -6,10 +6,11 @@ addpath('MultinomialFunctions/')
 addpath('Datasets/')
 
 % Variables initialization
+N = 10000;
 window = [300, 200, 100, 50];
 numberOfStates = [2, 3, 4, 5];
 ARL_0 = zeros(5,1);
-exp = 10;
+exp = 2;
 
 for ns=1:length(numberOfStates)
     
@@ -21,11 +22,12 @@ for ns=1:length(numberOfStates)
         % Compute ARL over 10 iterations
         for run=1:exp
             
+            fprintf('%d states, %d elements per window, experiment number %d.\n', numberOfStates(ns), window(w), run);
             counter = 1;
             FLAG = ones(5,1);
             while (sum(FLAG) > 0)  % Thresholds still to overcome
                 
-                [finalDataset] = discreteDataset(numberOfStates(ns));
+                [finalDataset] = Data_creation(numberOfStates(ns),N);
                 limit = floor(length(finalDataset)/window(w));
                 estimateVector = [];
                 
@@ -37,8 +39,8 @@ for ns=1:length(numberOfStates)
                 end
                 
                 % Find maximum
-                for t=1:length(estimateVector)
-                    hotellingT(1,t) = ShiftDifference(t, estimateVector);
+                for t=1:size(estimateVector,2)
+                    hotellingT(1,t) = ShiftDifference(t, estimateVector, 'approx');
                     [maxT, idx] = max(hotellingT);
                 end
                 

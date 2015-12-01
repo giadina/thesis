@@ -1,4 +1,4 @@
-function [ hotellingT ] = ShiftDifference( tChange, estimateVector,Shift_mode,covValue)
+function [ hotellingT ] = ShiftDifference( tChange, estimateVector,Shift_mode)
 %SHIFTDIFFERENCE Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -11,7 +11,7 @@ switch lower(Shift_mode)
     case {'exact'}
         hotellingT = ((stdDifference.'/covarianceEstimation(tChange, estimateVector))*stdDifference);
     case {'approx'}
-        hotellingT = ((stdDifference.'/covValue)*stdDifference);
+        hotellingT = ((stdDifference.'/approxCovarianceEstimation(estimateVector))*stdDifference);
 end
 
 end

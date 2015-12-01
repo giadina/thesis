@@ -1,38 +1,34 @@
-function [ hotellingT, maxT, idx, tChange] = applyCPMmean( h,numberOfStates,window,finalDataset,Shift_mode )
+function [ hotellingT, maxT, idx, tChange] = applyCPMmean( h,estimateVector,Shift_mode, CPM_mode)
 %APPLYCPMMEAN Summary of this function goes here
 %   Detailed explanation goes here
-%Variables initialization
 
-limit = floor(length(finalDataset)/window);
-estimateVector = [];
-
-%Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-for i=window+1:window:(limit*window)+window
-    vett = finalDataset(i - window:i-1);
-    A = hist(vett,1:numberOfStates)';
-    estimateVector = [estimateVector A/window];
-end
-
-switch lower(Shift_mode)
-    case {'exact'}
-        covValue = 0;
-    case {'approx'}
-        covValue = covarianceEstimation(length(estimateVector)/2, estimateVector);
-end
-
-% Compute maximum and compare it with the threshold
-for col=2:length(estimateVector)
-    for t=1:col-1
-        hotellingT(col,t) = ShiftDifference(t, estimateVector(:,1:col),Shift_mode,covValue);
-        [maxT(col,1), idx(col,1)] = max(hotellingT(col,:));
+% Set covariance value based on Shift modality
+switch lower(CPM_mode)
+    case {'online'}
+        for col=2:size(estimateVector,2)
+            for t=1:col-1
+                hotellingT(col,t) = ShiftDifference(t, estimateVector(:,1:col),Shift_mode);
+                [maxT(col,1), idx(col,1)] = max(hotellingT(col,:));
+                
+                % Compute maximum and compare it with the threshold
+                if maxT(col,1) >= h
+                    tChange = idx(col,1);
+                else
+                    tChange = 0;
+                end
+            end
+        end
         
-        if maxT(col,1) >= h
-            tChange = idx(col,1);
-            dimension = col;
+    case {'offline'}
+        for t=1:size(estimateVector,2)
+            hotellingT(1,t) = ShiftDifference(t, estimateVector, Shift_mode);
+            [maxT, idx] = max(hotellingT);
+        end
+        if maxT >= h
+            tChange = idx;
         else
             tChange = 0;
         end
-    end
-end
 end
 
+end
