@@ -7,16 +7,24 @@ addpath('Multinomial CDT/')
 addpath('Datasets/')
 
 %Variables intialization
-CPM = 'max_t';           %'max_t', 'out_cpm';
-CPM_mode = 'online';    %'offline', 'online';
+CPM = 'max_t';            %'max_t', 'out_cpm';
+CPM_mode = 'online';      %'offline', 'online';
 Shift_mode = 'approx';    %'exact', 'approx';
+Data_type = 'discrete';   %'gaussian', 'discrete';
 numberOfStates = 2;
 window = 100;
-DELTA = 0.3;             %DELTA can be maximum 1
+DELTA = 0.7;             %DELTA can be maximum 1
 N = 10000;
 tChange = 7500;
 confidence = 0.01;
-[finalDataset] = discreteDataset(numberOfStates, DELTA, N, tChange);
+
+switch lower(Data_type)
+    case{'gaussian'}
+        finalDataset = gaussianDataset(numberOfStates, DELTA, N, tChange);
+    case{'discrete'}
+        finalDataset = discreteDataset(numberOfStates, DELTA, N, tChange);
+end
+
 limit = floor(length(finalDataset)/window);
 estimateVector = [];
 

@@ -5,16 +5,21 @@ function [ hotellingT, maxT, idx, tChange] = applyCPMmean( h,estimateVector,Shif
 % Set covariance value based on Shift modality
 switch lower(CPM_mode)
     case {'online'}
+        FLAG = 1;
         for col=2:size(estimateVector,2)
             for t=1:col-1
                 hotellingT(col,t) = ShiftDifference(t, estimateVector(:,1:col),Shift_mode);
                 [maxT(col,1), idx(col,1)] = max(hotellingT(col,:));
                 
                 % Compute maximum and compare it with the threshold
-                if maxT(col,1) >= h
-                    tChange = idx(col,1);
-                else
-                    tChange = 0;
+                while FLAG
+                    if maxT(col,1) >= h
+                        tChange = idx(col,1);
+                        FLAG = 0;
+                    else
+                        tChange = 0;
+                    end
+                    break;
                 end
             end
         end
