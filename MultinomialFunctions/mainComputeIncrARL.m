@@ -10,7 +10,7 @@ N = 10000;
 window = [300, 200, 100, 50];
 numberOfStates = [2, 3, 4, 5];
 ARL_0 = zeros(5,1);
-exp = 3;
+exp = 20;
 
 for ns=1:length(numberOfStates)
     

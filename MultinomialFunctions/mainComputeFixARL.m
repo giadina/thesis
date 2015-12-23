@@ -7,8 +7,8 @@ addpath('Datasets/')
 
 % Variables initialization
 N = 10000;
-window =[300, 200, 100]; %[300, 200, 100, 50];
-numberOfStates =5; %[2, 3, 4, 5];
+window = [300, 200, 100, 50];
+numberOfStates = [2, 3, 4, 5];
 ARL_0 = zeros(5,1);
 exp = 20;
 
@@ -28,15 +28,8 @@ for ns=1:length(numberOfStates)
             while (sum(FLAG) > 0)  % Thresholds still to overcome
                 
                 [finalDataset] = Data_creation(numberOfStates(ns),N);
-                limit = floor(length(finalDataset)/window(w));
-                estimateVector = [];
-                
-                % Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-                for i=window(w)+1:window(w):(limit*window(w))+window(w)
-                    vett = finalDataset(i - window(w):i-1);
-                    A = hist(vett,1:numberOfStates(ns))';
-                    estimateVector = [estimateVector A/window(w)];
-                end
+                %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
+                estimateVector = vectorEstimation(finalDataset,numberOfStates(ns), window(w), 'discrete');
                 
                 % Find maximum
                 for t=1:size(estimateVector,2)

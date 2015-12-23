@@ -8,9 +8,9 @@ S = abs(randn(numberOfStates,numberOfStates));
 S = S * S';
 
 % Create the distribution
-X = [mvnrnd(mu,S,tChange); mvnrnd(mu,S,N-tChange)+DELTA];
+finalDataset = [mvnrnd(mu,S,tChange); mvnrnd(mu,S,N-tChange)+DELTA];
 
 % Generate the dataset
-finalDataset = X.';
+%finalDataset = X.';
 end
 

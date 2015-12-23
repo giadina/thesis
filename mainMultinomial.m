@@ -7,17 +7,18 @@ addpath('Multinomial CDT/')
 addpath('Datasets/')
 
 %Variables intialization
-CPM = 'max_t';            %'max_t', 'out_cpm';
+CPM = 'max_cpm';          %'max_cpm', 'out_cpm';
 CPM_mode = 'online';      %'offline', 'online';
 Shift_mode = 'approx';    %'exact', 'approx';
-Data_type = 'discrete';   %'gaussian', 'discrete';
-numberOfStates = 2;
-window = 100;
-DELTA = 0.7;             %DELTA can be maximum 1
+Data_type = 'gaussian';   %'gaussian', 'discrete';
+numberOfStates = 5;
+window = 300;
+DELTA = 5;             %DELTA can be maximum 1
 N = 10000;
 tChange = 7500;
 confidence = 0.01;
 
+%Generate the dataset
 switch lower(Data_type)
     case{'gaussian'}
         finalDataset = gaussianDataset(numberOfStates, DELTA, N, tChange);
@@ -25,20 +26,13 @@ switch lower(Data_type)
         finalDataset = discreteDataset(numberOfStates, DELTA, N, tChange);
 end
 
-limit = floor(length(finalDataset)/window);
-estimateVector = [];
-
 %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-for i=window+1:window:(limit*window)+window
-    vett = finalDataset(i - window:i-1);
-    A = hist(vett,1:numberOfStates)';
-    estimateVector = [estimateVector A/window];
-end
+estimateVector = vectorEstimation(finalDataset,numberOfStates, window, Data_type);
 
-fprintf('Detection with %s CPM, %s modality.\n', CPM, CPM_mode);
+fprintf('Detection with %s dataset, %s CPM, %s modality.\n',Data_type, CPM, CPM_mode);
 
 switch lower(CPM)
-    case {'max_t'}
+    case {'max_cpm'}
         fprintf('%s statistic.\n', Shift_mode);
         THRESHOLD = selectThreshold(numberOfStates, window, confidence);
         % Apply CPM mean
@@ -47,11 +41,11 @@ switch lower(CPM)
         switch lower(CPM_mode)
             case {'online'}
                 figure, plot(maxT,'LineWidth',1)
-                line([0 100],[THRESHOLD THRESHOLD],'LineStyle','-.','Color','r')
+                line([0 length(maxT)],[THRESHOLD THRESHOLD],'LineStyle','-.','Color','r')
                 legend('CPM online', 'threshold')
             case {'offline'}
                 figure, plot(hotellingT,'LineWidth',1)
-                line([0 100],[THRESHOLD THRESHOLD],'LineStyle','-.','Color','r')
+                line([0 length(hotellingT)],[THRESHOLD THRESHOLD],'LineStyle','-.','Color','r')
                 legend('CPM offline', 'threshold')
         end
         
@@ -64,7 +58,7 @@ switch lower(CPM)
         CPM_param.initPoint = CPM_init;
         load('COMPUTED_THRESHOLDs.mat');
         % Apply CPM mean,S
-        [ out_cpm, l_max, tau ] = CPM_Multi( estimateVector.', CPM_param );
+        [ out_cpm, l_max, tau ] = CPM_Multi(estimateVector.', CPM_param);
         if l_max > THRESHOLD(1)
             counter = tau;
         end

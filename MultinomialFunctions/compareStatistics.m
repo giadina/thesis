@@ -10,21 +10,25 @@ DELTA = 0.3; % DELTA può essere massimo 1
 N = 10000;
 tChange = 7500;
 confidence = 0.01;
-CPM_mode = 'online';
-[finalDataset] = discreteDataset(numberOfStates, DELTA, N, tChange);
+CPM_mode = 'online';      %'offline', 'online';
+Data_type = 'gaussian';   %'gaussian', 'discrete';
+
+%Generate the dataset
+switch lower(Data_type)
+    case{'gaussian'}
+        finalDataset = gaussianDataset(numberOfStates, DELTA, N, tChange);
+    case{'discrete'}
+        finalDataset = discreteDataset(numberOfStates, DELTA, N, tChange);
+end
+
 THRESHOLD = selectThreshold(numberOfStates, window, confidence);
-limit = floor(length(finalDataset)/window);
-estimateVector = [];
 
 %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-for i=window+1:window:(limit*window)+window
-    vett = finalDataset(i - window:i-1);
-    A = hist(vett,1:numberOfStates)';
-    estimateVector = [estimateVector A/window];
-end
+estimateVector = vectorEstimation(finalDataset,numberOfStates, window, Data_type);
 
 [hotellingTExact, maxTExact, idxExact, tChangeExact] = applyCPMmean(THRESHOLD,estimateVector,'exact', CPM_mode);
 [hotellingTApprox, maxTApprox, idxApprox, tChangeApprox] = applyCPMmean(THRESHOLD,estimateVector,'approx', CPM_mode);
+
 switch lower(CPM_mode)
     case {'online'}
         figure(1), plot(maxTExact,'LineWidth',1)
