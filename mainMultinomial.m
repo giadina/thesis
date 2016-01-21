@@ -10,24 +10,26 @@ addpath('Datasets/')
 CPM = 'max_cpm';          %'max_cpm', 'out_cpm';
 CPM_mode = 'online';      %'offline', 'online';
 Shift_mode = 'approx';    %'exact', 'approx';
-Data_type = 'gaussian';   %'gaussian', 'discrete';
-numberOfStates = 5;
-window = 300;
-DELTA = 5;             %DELTA can be maximum 1
+Data_type = 'discrete';   %'gaussian', 'discrete';
+numberOfStates = 2;
+window = 100;
+DELTA = 5;             %If Data_type=discrete DELTA<=1, otherwise DELTA>1
 N = 10000;
-tChange = 7500;
+limit = floor(N/window);
+Change = 7500;
+changeGaus = floor(Change/window);
 confidence = 0.01;
 
 %Generate the dataset
 switch lower(Data_type)
     case{'gaussian'}
-        finalDataset = gaussianDataset(numberOfStates, DELTA, N, tChange);
+        finalDataset = gaussianDataset(numberOfStates, DELTA, limit, changeGaus);
+        estimateVector = finalDataset.';
     case{'discrete'}
-        finalDataset = discreteDataset(numberOfStates, DELTA, N, tChange);
+        discreteDataset = discreteDataset(numberOfStates, DELTA, N, Change);
+        %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
+        estimateVector = vectorEstimation(discreteDataset,numberOfStates, window, Data_type);
 end
-
-%Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-estimateVector = vectorEstimation(finalDataset,numberOfStates, window, Data_type);
 
 fprintf('Detection with %s dataset, %s CPM, %s modality.\n',Data_type, CPM, CPM_mode);
 
@@ -52,17 +54,17 @@ switch lower(CPM)
     case {'out_cpm'}
         %Variables initialization CPM mean,s
         CPM_type = 'full'; %'sel'
-        CPM_init = round(length(finalDataset)/2) + 1;
+        CPM_init = round(length(estimateVector)/2) + 1;
         CPM_param = [];
         CPM_param.type = CPM_type;
         CPM_param.initPoint = CPM_init;
         load('COMPUTED_THRESHOLDs.mat');
-        % Apply CPM mean,S
+        % Apply CPM mean,S estimateVector.'
         [ out_cpm, l_max, tau ] = CPM_Multi(estimateVector.', CPM_param);
         if l_max > THRESHOLD(1)
             counter = tau;
         end
         disp(['Change point found at: ', num2str(tau)]);
         figure, plot(out_cpm,'LineWidth',1)
-        line([0 length(finalDataset)],[THRESHOLD(1) THRESHOLD(1)],'LineStyle','-.','Color', 'r')
+        line([0 length(estimateVector)],[THRESHOLD(1) THRESHOLD(1)],'LineStyle','-.','Color', 'r')
 end

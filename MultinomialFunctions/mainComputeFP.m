@@ -2,8 +2,8 @@ close all
 clear
 clc
 
-addpath('MultinomialFunctions/')
-addpath('Datasets/')
+addpath('../MultinomialFunctions/')
+addpath('../Datasets/')
 
 %Variables intialization
 Data_type = 'gaussian';   %'gaussian', 'discrete';
@@ -16,9 +16,9 @@ N = 10000;
 tChange = 7500;
 mediaT = zeros(1,3);
 
-fileID = fopen('FP_gaussian.txt','w');
 for ns=1:length(numberOfStates)
     for w=1:length(window)
+        limit = floor(N/window(w));
         for c=1:length(confidence)
             THRESHOLD = selectThreshold(numberOfStates(ns), window(w), confidence(c));
             fprintf('%d stati, finestra di %d campioni, confidenza del %d, soglia %d.\n',numberOfStates(ns), window(w), confidence(c), THRESHOLD);
@@ -29,13 +29,13 @@ for ns=1:length(numberOfStates)
                     %Generate the dataset
                     switch lower(Data_type)
                         case{'gaussian'}
-                            finalDataset = gaussianDataset(numberOfStates(ns), DELTA, N, tChange);
+                            finalDataset = gaussianDataset(numberOfStates(ns), DELTA, limit, floor(tChange/window(w)));
+                            estimateVector = finalDataset.';
                         case{'discrete'}
                             finalDataset = Data_creation(numberOfStates(ns), N);
+                            %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
+                            estimateVector = vectorEstimation(finalDataset,numberOfStates(ns), window(w), Data_type);
                     end
-                    
-                    %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-                    estimateVector = vectorEstimation(finalDataset,numberOfStates(ns), window(w), Data_type);
                     
                     % Find maximum
                     for t=1:size(estimateVector,2)
@@ -52,9 +52,9 @@ for ns=1:length(numberOfStates)
             end
             
             FP = mean(mediaT);
+            fileID = fopen('FP_gaussian.txt','a');
             fprintf(fileID,'\n%d falsi positivi, %d stati, finestra di %d campioni, confidenza del %d %, soglia %d.\n',FP,numberOfStates(ns),window(w),confidence(c),THRESHOLD);
+            fclose(fileID);
         end
     end
 end
-
-fclose(fileID);

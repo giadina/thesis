@@ -1,5 +1,5 @@
 function [ discreteData ] = discreteDataset( numberOfStates, DELTA, N, tChange )
-% Generate a random discrete Dataset of 10000 data and a change from instante tChange to the end of the stream;
+% Generate a random discrete Dataset of N data and a change starting from tChange untill the end of the stream;
 
 negative = true;
 while negative
@@ -12,9 +12,9 @@ while negative
     delta0 = sum(abs(p1 - p2));
     epsilon = delta0/DELTA;
     p3 = (p2 - p1)/epsilon + p1;
-    
-    if any(p3 < 0)
-        disp('Distribution contains negative probabilities')
+   
+    if any(p3 < 0 | sum(p3) ~= 1)
+        disp('Distribution contains negative probabilities or the sum is not one')
     else
         negative = false;
         p2 = p3;

@@ -10,7 +10,5 @@ S = S * S';
 % Create the distribution
 finalDataset = [mvnrnd(mu,S,tChange); mvnrnd(mu,S,N-tChange)+DELTA];
 
-% Generate the dataset
-%finalDataset = X.';
 end
 

@@ -33,7 +33,7 @@ max_value_vector = [];
 max_index_vector = [];
 load('COMPUTED_THRESHOLDs.mat');
 
-for nexp = 1:NEXP
+for nexp = 1:1
     
     mu = randn(p,1);
     
@@ -41,7 +41,7 @@ for nexp = 1:NEXP
     S = S * S';
     
     % Generate Random Variables
-    X = [mvnrnd(mu,S,N/2); mvnrnd(mu,S,N/2)+5];
+    X = [mvnrnd(mu,S,N/2); mvnrnd(mu,S,N/2)];
     
     [ out_cpm, l_max, tau ] = CPM_Multi( X, CPM_param );
     
