@@ -3,6 +3,7 @@ function [ discreteData ] = discreteDataset( numberOfStates, DELTA, N, tChange )
 
 negative = true;
 while negative
+    
     p1 = rand(1,numberOfStates);
     p1 = p1/sum(p1);
     
@@ -12,7 +13,7 @@ while negative
     delta0 = sum(abs(p1 - p2));
     epsilon = delta0/DELTA;
     p3 = (p2 - p1)/epsilon + p1;
-   
+    
     if any(p3 < 0 | sum(p3) ~= 1)
         disp('Distribution contains negative probabilities or the sum is not one')
     else

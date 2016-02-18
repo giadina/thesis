@@ -19,7 +19,7 @@ for ns=1:length(numberOfStates)
     
     for w=1:length(window)
         
-        % Compute ARL over 10 iterations
+        % Compute ARL over exp iterations
         for run=1:exp
             
             fprintf('%d states, %d elements per window, experiment number %d.\n', numberOfStates(ns), window(w), run);
@@ -29,7 +29,7 @@ for ns=1:length(numberOfStates)
                 
                 [finalDataset] = Data_creation(numberOfStates(ns),N);
                 %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-                estimateVector = vectorEstimation(finalDataset,numberOfStates(ns), window(w), 'discrete');
+                estimateVector = vectorEstimation(finalDataset,numberOfStates(ns), window(w));
                 
                 % Find maximum
                 for t=1:size(estimateVector,2)

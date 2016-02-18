@@ -16,15 +16,15 @@ Data_type = 'gaussian';   %'gaussian', 'discrete';
 %Generate the dataset
 switch lower(Data_type)
     case{'gaussian'}
-        finalDataset = gaussianDataset(numberOfStates, DELTA, N, tChange);
+        finalDataset = gaussianDataset(numberOfStates, DELTA, limit, changeGaus);
+        estimateVector = finalDataset.';
     case{'discrete'}
-        finalDataset = discreteDataset(numberOfStates, DELTA, N, tChange);
+        discreteDataset = discreteDataset(numberOfStates, DELTA, N, Change);
+        %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
+        estimateVector = vectorEstimation(discreteDataset,numberOfStates, window);
 end
 
 THRESHOLD = selectThreshold(numberOfStates, window, confidence);
-
-%Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-estimateVector = vectorEstimation(finalDataset,numberOfStates, window, Data_type);
 
 [hotellingTExact, maxTExact, idxExact, tChangeExact] = applyCPMmean(THRESHOLD,estimateVector,'exact', CPM_mode);
 [hotellingTApprox, maxTApprox, idxApprox, tChangeApprox] = applyCPMmean(THRESHOLD,estimateVector,'approx', CPM_mode);

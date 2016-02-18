@@ -6,28 +6,38 @@ addpath('MultinomialFunctions/')
 addpath('Datasets/')
 
 %Variables initialization
-N = 10000;
-window = 100;
-numberOfStates = 2;
+window = 50;
+numberOfStates = 5;
 percentili = [99 99.5 99.8 99.9 99.95];
 resPercentili = zeros(1,length(percentili));
 Shift_mode = 'exact';
+Data_type = 'gaussian';
+DELTA = 0;
+N = 10000;
+tChange = 7500;
 maxTot = zeros(1000,1);
+limit = floor(N/window);
 
-fileID = fopen('thresholds_p50.txt','w');
+FILENAME = sprintf('thresholds_w%d_NS%d.txt', window,numberOfStates);
+fileID = fopen(FILENAME,'w');
 for run=1:1000
-    [finalDataset] = Data_creation(numberOfStates, N);
+    switch lower(Data_type)
+        case{'gaussian'}
+            finalDataset = gaussianDataset(numberOfStates, DELTA, limit, floor(tChange/window));
+            estimateVector = finalDataset.';
+        case{'discrete'}
+            finalDataset = Data_creation(numberOfStates, N);
+            %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
+            estimateVector = vectorEstimation(finalDataset,numberOfStates, window);
+    end
     fprintf('Experiment %d \n', run);
-    
-    %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-    estimateVector = vectorEstimation(finalDataset,numberOfStates, window, 'discrete');
     
     % Find maximum
     for t=1:size(estimateVector,2)
         hotellingT(1,t) = ShiftDifference(t, estimateVector, Shift_mode);
         [maxT, idx] = max(hotellingT);
     end
-   
+    
     maxTot(run,1) = maxT;
 end
 

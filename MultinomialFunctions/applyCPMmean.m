@@ -6,7 +6,7 @@ function [ hotellingT, maxT, idx, tChange] = applyCPMmean( h,estimateVector,Shif
 switch lower(CPM_mode)
     case {'online'}
         FLAG = 1;
-        for col=2:size(estimateVector,2)
+        for col=3:size(estimateVector,2)
             for t=1:col-1
                 hotellingT(col,t) = ShiftDifference(t, estimateVector(:,1:col),Shift_mode);
                 [maxT(col,1), idx(col,1)] = max(hotellingT(col,:));

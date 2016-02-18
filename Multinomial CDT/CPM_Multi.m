@@ -64,6 +64,5 @@ l = l*2/(p*(p+3));
 l(x) = l(x) - ev; 
 [l_max,tau] = max(l);
 
-
 end
 

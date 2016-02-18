@@ -1,4 +1,4 @@
-function [ estimateVector ] = vectorEstimation(finalDataset, numberOfStates, window, Data_type)
+function [ estimateVector ] = vectorEstimation(finalDataset, numberOfStates, window)
 %VECTORESTIMATION Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -7,13 +7,7 @@ estimateVector = [];
 
 for i=window+1:window:(limit*window)+window
     vett = finalDataset(i - window:i-1,:);
-    
-    switch lower(Data_type)
-        case{'gaussian'}
-            A = hist(vett,1:numberOfStates);
-        case{'discrete'}
-            A = hist(vett,1:numberOfStates)';
-    end
+    A = hist(vett,1:numberOfStates)';
     
     estimateVector = [estimateVector A/window];
 end

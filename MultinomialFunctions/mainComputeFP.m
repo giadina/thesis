@@ -2,15 +2,18 @@ close all
 clear
 clc
 
-addpath('../MultinomialFunctions/')
-addpath('../Datasets/')
+addpath('MultinomialFunctions/')
+addpath('Datasets/')
 
 %Variables intialization
 Data_type = 'gaussian';   %'gaussian', 'discrete';
 Shift_mode = 'exact';
-window = [300, 200, 100, 50];
-numberOfStates = [2, 3, 4, 5];
-confidence = [0.01, 0.005, 0.002, 0.001, 0.0005];
+% window = [300, 200, 100, 50];
+% numberOfStates = [2, 3, 4, 5];
+% confidence = [0.01, 0.005, 0.002, 0.001, 0.0005];
+window = [200];
+numberOfStates = [3];
+confidence = [0.01];
 DELTA = 0;
 N = 10000;
 tChange = 7500;
@@ -20,7 +23,8 @@ for ns=1:length(numberOfStates)
     for w=1:length(window)
         limit = floor(N/window(w));
         for c=1:length(confidence)
-            THRESHOLD = selectThreshold(numberOfStates(ns), window(w), confidence(c));
+            %             THRESHOLD = selectThreshold(numberOfStates(ns), window(w), confidence(c));
+            THRESHOLD = 12.424
             fprintf('%d stati, finestra di %d campioni, confidenza del %d, soglia %d.\n',numberOfStates(ns), window(w), confidence(c), THRESHOLD);
             for prova=1:3
                 fp = 0;
@@ -34,25 +38,23 @@ for ns=1:length(numberOfStates)
                         case{'discrete'}
                             finalDataset = Data_creation(numberOfStates(ns), N);
                             %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-                            estimateVector = vectorEstimation(finalDataset,numberOfStates(ns), window(w), Data_type);
+                            estimateVector = vectorEstimation(finalDataset,numberOfStates(ns), window(w));
                     end
                     
-                    % Find maximum
                     for t=1:size(estimateVector,2)
                         hotellingT(1,t) = ShiftDifference(t, estimateVector, Shift_mode);
                         [maxT, idx] = max(hotellingT);
                     end
-                    
-                    %controllo superamento soglia fissa
                     if maxT >= THRESHOLD
                         fp = fp +1;
                     end
+                    
                 end
                 mediaT(1,prova) = fp;
             end
             
             FP = mean(mediaT);
-            fileID = fopen('FP_gaussian.txt','a');
+            fileID = fopen('FP_gaussian_new.txt','a');
             fprintf(fileID,'\n%d falsi positivi, %d stati, finestra di %d campioni, confidenza del %d %, soglia %d.\n',FP,numberOfStates(ns),window(w),confidence(c),THRESHOLD);
             fclose(fileID);
         end
