@@ -10,25 +10,24 @@ addpath('Datasets/')
 CPM = 'cdt1';          %'cdt1', 'cdt2';
 CPM_mode = 'online';      %'offline', 'online';
 Shift_mode = 'exact';    %'exact', 'approx';
-Data_type = 'gaussian';   %'gaussian', 'discrete';
-numberOfStates = 4;
-window = 100;
-DELTA = 9;             %If Data_type=discrete DELTA<=1, otherwise DELTA>1
-N = 10000;
-limit = floor(N/window);
-Change = 7500;
-changeGaus = floor(Change/window);
-confidence = 0.01;
+Data_type = 'gaussian';   %'gaussian', 'discrete', 'iris';
 
 %Generate the dataset
-switch lower(Data_type)
-    case{'gaussian'}
-        finalDataset = gaussianDataset(numberOfStates, DELTA, limit, changeGaus);
-        estimateVector = finalDataset.';
-    case{'discrete'}
-        discreteDataset = discreteDataset(numberOfStates, DELTA, N, Change);
-        %Calculate the observation matrix Nij(number of occurence of each state) for non-overlapping slots of '#window' data
-        estimateVector = vectorEstimation(discreteDataset,numberOfStates, window);
+window = 3;
+confidence = 0.001;
+
+flowers = iris_dataset;
+classes = flowers(1:4,51:150);
+
+numberOfStates = size(classes,1);
+limit = floor(length(classes)/window);
+estimateVector = [];
+
+for i=window+1:window:(limit*window)+window
+    vett = classes(:,i - window:i-1);
+    A = mean(vett,2);
+    
+    estimateVector = [estimateVector A];
 end
 
 fprintf('Detection with %s dataset, %s, %s modality.\n',Data_type, CPM, CPM_mode);
@@ -36,16 +35,20 @@ fprintf('Detection with %s dataset, %s, %s modality.\n',Data_type, CPM, CPM_mode
 switch lower(CPM)
     case {'cdt1'}
         fprintf('%s statistic.\n', Shift_mode);
-        THRESHOLD = selectThreshold(numberOfStates, limit, confidence, Data_type);
+        THRESHOLD = selectThreshold(numberOfStates, 33, confidence, Data_type);
         % Apply CPM mean
-        [ hotellingT, maxT, idx, tChange, sampleReference] = applyCPMmean(THRESHOLD,estimateVector,Shift_mode,CPM_mode);
+        [hotellingT, maxT, idx, tChange, sampleReference] = applyCPMmean(THRESHOLD,estimateVector,Shift_mode,CPM_mode);
         disp(['Change point found at: ', num2str(tChange)]);
         switch lower(CPM_mode)
             case {'online'}
                 figure, plot(maxT,'LineWidth',1)
+%                 y1=get(gca,'ylim');
+%                 hold on
+%                 plot([sampleReference sampleReference],y1)
+%                 plot([tChange tChange],y1)
                 line([0 length(maxT)],[THRESHOLD THRESHOLD],'LineStyle','-.','Color','r')
                 legend('CPM online', 'threshold')
-                
+                hold off
             case {'offline'}
                 figure, plot(hotellingT,'LineWidth',1)
                 line([0 length(hotellingT)],[THRESHOLD THRESHOLD],'LineStyle','-.','Color','r')

@@ -8,10 +8,11 @@ numberOfStates = 2;
 window = 100;
 DELTA = 0.3; % DELTA può essere massimo 1
 N = 10000;
-tChange = 7500;
+Change = 7500;
+changeGaus = floor(Change/window);
 confidence = 0.01;
 CPM_mode = 'online';      %'offline', 'online';
-Data_type = 'gaussian';   %'gaussian', 'discrete';
+Data_type = 'discrete';   %'gaussian', 'discrete';
 
 %Generate the dataset
 switch lower(Data_type)
@@ -24,10 +25,10 @@ switch lower(Data_type)
         estimateVector = vectorEstimation(discreteDataset,numberOfStates, window);
 end
 
-THRESHOLD = selectThreshold(numberOfStates, window, confidence);
+THRESHOLD = selectThreshold(numberOfStates, window, confidence, Data_type);
 
-[hotellingTExact, maxTExact, idxExact, tChangeExact] = applyCPMmean(THRESHOLD,estimateVector,'exact', CPM_mode);
-[hotellingTApprox, maxTApprox, idxApprox, tChangeApprox] = applyCPMmean(THRESHOLD,estimateVector,'approx', CPM_mode);
+[hotellingTExact, maxTExact, idxExact, tChangeExact,sampleReferenceExact] = applyCPMmean(THRESHOLD,estimateVector,'exact', CPM_mode);
+[hotellingTApprox, maxTApprox, idxApprox, tChangeApprox,sampleReferenceApprox] = applyCPMmean(THRESHOLD,estimateVector,'approx', CPM_mode);
 
 switch lower(CPM_mode)
     case {'online'}

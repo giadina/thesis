@@ -6,8 +6,8 @@ addpath('MultinomialFunctions/')
 addpath('Datasets/')
 
 %Variables initialization
-window = 50;
-numberOfStates = 5;
+window = 300;
+numberOfStates = 2;
 percentili = [99 99.5 99.8 99.9 99.95];
 resPercentili = zeros(1,length(percentili));
 Shift_mode = 'exact';
@@ -17,6 +17,7 @@ N = 10000;
 tChange = 7500;
 maxTot = zeros(1000,1);
 limit = floor(N/window);
+value = 0;
 
 FILENAME = sprintf('thresholds_w%d_NS%d.txt', window,numberOfStates);
 fileID = fopen(FILENAME,'w');
@@ -34,7 +35,7 @@ for run=1:1000
     
     % Find maximum
     for t=1:size(estimateVector,2)
-        hotellingT(1,t) = ShiftDifference(t, estimateVector, Shift_mode);
+        hotellingT(1,t) = ShiftDifference(t, estimateVector, Shift_mode,value);
         [maxT, idx] = max(hotellingT);
     end
     
